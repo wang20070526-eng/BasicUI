@@ -1,12 +1,14 @@
 package tw.edu.pu.csim.aaaaaaaaa.basicui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import tw.edu.pu.csim.aaaaaaaaa.basicui.ui.theme.BasicUITheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,6 +204,9 @@ data class Animal(
 
 @Composable
 fun LazyRowExample(modifier: Modifier = Modifier) {
+    // 1. 變數宣告放在 listOf 外部
+    val context = LocalContext.current
+
     val animals = listOf(
         Animal("鴨子", R.drawable.animal0),
         Animal("企鵝", R.drawable.animal1),
@@ -216,23 +224,43 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
         modifier = Modifier.fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        itemsIndexed(animals) {index, animal ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.width(200.dp) // 橫向列表內部項目建議改用固定的 width
+        itemsIndexed(animals) { index, animal ->
+            // 2. 將 Column 放入 Card 內部
+            Card(
+                modifier = Modifier
+                    .fillParentMaxWidth(1.0f)
+                    .height(260.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFD0BCFF)
+                )
             ) {
-                Image(
-                    painter = painterResource(id = animal.imageRes),
-                    contentDescription = animal.name,
-                    modifier = Modifier.size(150.dp)
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Image(
+                        painter = painterResource(id = animal.imageRes),
+                        contentDescription = animal.name,
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clickable {
+                                // 點擊時跳出 Toast 訊息
+                                Toast.makeText(
+                                    context,
+                                    "您點選的是 ${animal.name}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "$index ${animal.name}"
-                )
+                    Text(
+                        text = "$index ${animal.name}"
+                    )
+                }
             }
         }
     }
