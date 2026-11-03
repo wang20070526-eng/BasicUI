@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +16,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -37,6 +40,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tw.edu.pu.csim.aaaaaaaaa.basicui.ui.theme.BasicUITheme
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +65,8 @@ fun Main(modifier: Modifier = Modifier) {
         LazyColumnExample(modifier)
         ColumnExample(modifier)
         TextFieldExample(modifier)
-
-    }
+        LazyRowExample(modifier)
+      }
 }
 
 @Composable
@@ -184,5 +189,51 @@ fun TextFieldExample(modifier: Modifier = Modifier) {
         Text(
             text = if (inputText.isBlank()) "尚未輸入內容" else "您輸入的是：$inputText"
         )
+    }
+}
+
+data class Animal(
+    val name: String,
+    @DrawableRes val imageRes: Int
+)
+
+@Composable
+fun LazyRowExample(modifier: Modifier = Modifier) {
+    val animals = listOf(
+        Animal("鴨子", R.drawable.animal0),
+        Animal("企鵝", R.drawable.animal1),
+        Animal("青蛙", R.drawable.animal2),
+        Animal("貓頭鷹", R.drawable.animal3),
+        Animal("海豚", R.drawable.animal4),
+        Animal("牛", R.drawable.animal5),
+        Animal("無尾熊", R.drawable.animal6),
+        Animal("獅子", R.drawable.animal7),
+        Animal("狐狸", R.drawable.animal8),
+        Animal("小雞", R.drawable.animal9)
+    )
+
+    LazyRow(
+        modifier = Modifier.fillMaxHeight(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        itemsIndexed(animals) {index, animal ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.width(200.dp) // 橫向列表內部項目建議改用固定的 width
+            ) {
+                Image(
+                    painter = painterResource(id = animal.imageRes),
+                    contentDescription = animal.name,
+                    modifier = Modifier.size(150.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "$index ${animal.name}"
+                )
+            }
+        }
     }
 }
